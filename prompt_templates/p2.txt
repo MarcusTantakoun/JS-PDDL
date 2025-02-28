@@ -1,0 +1,7 @@
+You are given a Minecraft bot controller Javascript function and a natural language description summarizing the function. I want you to provide 1-sentence of 25 words or less which describes the goals, preconditions, and effects of the function.
+
+Given Javascript function:
+{javascript_function}
+
+Natural language summary:
+{p1}

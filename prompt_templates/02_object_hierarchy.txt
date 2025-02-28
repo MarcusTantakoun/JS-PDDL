@@ -1,0 +1,1 @@
+player, craftTable, plankBlock, woodBlock, stickItem, woodenSword, woodenPickaxe, gridSquare and some object. Here, craftTable, plankBlock, woodBlock, stickItem, woodenSword, and woodenPickaxe are all child types of the parent type some object (i.e. plankBlock woodBlock stickItem woodenSword woodenPickaxe - some object).

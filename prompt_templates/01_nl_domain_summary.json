@@ -1,0 +1,14 @@
+{
+    "craftItem": {
+        "crafting-table": "The precondition for this action is the player must have 4 individual planks. The effect of this action is the player has one craft table.",
+        "wooden-planks": "Any four matching wood blocks produce four individual planks. The precondition of this action is the player must have four individual wood blocks. The effect of this action is the player has four individual planks. No crafting table is needed to execute this action.",
+        "sticks": "Any two wood planks produce four individual sticks. The precondition of this action is the player must have two individual planks. The effect of this action is the player has four individual sticks. No crafting table is needed to execute this action.",
+        "wooden-sword": "Two planks of any kind and one stick produce a wooden sword. The precondition of this action is the player must have two planks and one stick. The effect of this is the player has a wooden sword. The player must have a crafting table to execute this action."
+    },
+
+    "CollectBlock": {},
+
+    "goTo": {},
+    
+    "placeItem": {}
+}

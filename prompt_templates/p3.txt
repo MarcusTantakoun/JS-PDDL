@@ -1,0 +1,17 @@
+The recipe to {action_name} in Minecraft is: {p2}
+
+If you were asked to create a simple PDDL {action_name} action, which of these types would you need?
+
+The types you can choose from are: 
+{object_hierarchy}
+
+Base the types you select on the following summary of a generic Minecraft action: {p1}
+
+End your final answer starting with "## OUTPUT" and then the Python dictionary pair '{'name':'description'}' as so:
+
+## OUTPUT
+{
+    "type_1": "description",
+    "type_2": "description",
+    "type_3": "description",
+}

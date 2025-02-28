@@ -1,0 +1,23 @@
+If you were asked to create a simple PDDL {action_name} action, what predicates from this list would you need?:
+
+{predicate_list}
+
+The recipe to craft sticks in Minecraft is: {p2}
+
+Base the predicates you select on the following summary of a generic Minecraft action: {p1}
+
+Don’t repeat predicates or change the predicates I have given you in any way. You must follow this rule. For
+example, if the predicates you selected were (IsMammal ?someanimal - animal) and (IsInsect ?somebug - bug)
+from the list (IsMammal ?someanimal - animal) (IsInsect ?somebug - bug) (IsPlant ?someplant - plant), you
+would answer as “‘(IsMammal ?someanimal - animal), (IsInsect ?somebug - bug)“‘, where each predicate only
+appears a single time and has not been changed. For example, (IsMammal ?someanimal - animal) did not become
+(IsMammal ?someanimal1 - animal) and (IsMammal ?someanimal2 - animal).
+
+End your final answers starting with "### New Predicates" with ''' ''' comment blocks in PDDL as so:
+
+### New Predicates
+```
+- (predicate_name_1 ?t1 - type_1 ?t2 - type_2): 'predicate_description'
+- (predicate_name_2 ?t3 - type_3 ?t4 - type_4): 'predicate_description'
+- (predicate_name_3 ?t5 - type_5): 'predicate_description'
+``` 
