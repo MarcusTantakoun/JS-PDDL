@@ -1,9 +1,9 @@
 You are a helpful assistant that is an expert in writing PDDL actions. Your task is to write a PDDL action for
 {action_name} in Minecraft.
 
-Base the action you create on the following summary of a generic Minecraft action: {p1}
+Base the action you create on the following summary of a generic Minecraft action: {p1} {p2}
 
-The recipe to craft sticks in Minecraft is: {p2}
+The recipe to craft sticks in Minecraft is: {nl_domain}
 
 Make this action using the Minecraft recipe, and the following types and predicates:
 Types: 
@@ -22,7 +22,7 @@ And follow these rules:
     2) You are only allowed to use the types and predicates I have given you.
 
 
-End your final answers underneath the headers: '### Action Parameters,' '### Action Preconditions,' and '### Action Effects,' with ''' ''' comment blocks in PDDL as so:
+End your final answers underneath the headers: '### Action Parameters,' '### Action Preconditions,' '### Action Effects,' and '### New Predicates' with ''' ''' comment blocks in PDDL as so:
 
 ### Action Parameters
 ```
@@ -42,3 +42,10 @@ End your final answers underneath the headers: '### Action Parameters,' '### Act
     (predicate_name ?t1 ?t2) ; COMMENT DESCRIPTION
 )
 ```
+
+### New Predicates
+```
+- (predicate_name ?t1 - type_1 ?t2 - type_2): 'predicate_description'
+``` 
+
+If there are no new predicates created, keep an empty space enclosed ```  ``` with the '### New Predicates' header.

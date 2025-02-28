@@ -2,9 +2,9 @@ If you were asked to create a simple PDDL {action_name} action, what predicates 
 
 {predicate_list}
 
-The recipe to craft sticks in Minecraft is: {p2}
+The recipe to craft sticks in Minecraft is: {nl_domain}
 
-Base the predicates you select on the following summary of a generic Minecraft action: {p1}
+Base the predicates you select on the following summary of a generic Minecraft action: {p1} {p2}
 
 Don’t repeat predicates or change the predicates I have given you in any way. You must follow this rule. For
 example, if the predicates you selected were (IsMammal ?someanimal - animal) and (IsInsect ?somebug - bug)

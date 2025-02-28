@@ -39,6 +39,8 @@ def run_JSPDDL_pipeline(
         ) -> str:
 
     sum = SummarizationStage()
+    ext = ExtractionStage()
+
     sum.generate_nl_summary(model=model, p_action_name=p_action_name, 
                             js_function=func, prompt=prompts[0])
 
@@ -50,11 +52,38 @@ def run_JSPDDL_pipeline(
     p2 = sum.get_p2()
     print(p2)
 
-    ext = ExtractionStage()
-    select_types = ext.extract_types(model=model, action_name=action_name, prompt=prompts[2], p1=p1, p2=p2, obj_hierarchy=obj_hierarchy)
+    ext.extract_types(model=model, action_name=action_name, nl_domain=nl_domains[2], 
+                      prompt=prompts[2], p1=p1, p2=p2, obj_hierarchy=obj_hierarchy)
+    select_types = ext.get_types()
+    types_str = "\n".join(select_types)
     print(select_types)
 
-    select_predicates = ext.extract_predicates()
+    ext.extract_predicates(model=model, action_name=action_name, prompt=prompts[3], 
+                           nl_domain=nl_domains[2], p1=p1, p2=p2, pred_list=pred_pool)
+    select_predicates = ext.get_predicates()
+    predicates_str = "\n".join(
+        [pred["clean"].replace(":", " ; ") for pred in select_predicates]
+    )
+    print(select_predicates)
+
+    ext.extract_pddl_action(model=model, action_name=action_name,
+                            prompt=prompts[4], nl_domain=nl_domains[2], p1=p1, p2=p2, 
+                            types=types_str, pred_list=predicates_str)
+    action = ext.get_action()
+    print(action)
+
+    types = {
+        name: description
+        for name, description in types.items()
+        if name not in unsupported_keywords
+    }  # remove unsupported words
+
+    # format strings
+    predicate_str = "\n".join(
+        [pred["clean"].replace(":", " ; ") for pred in predicates]
+    )
+    types_str = "\n".join(types)
+
 
 if __name__ == "__main__":
 
@@ -75,7 +104,6 @@ if __name__ == "__main__":
     with open("data/01_nl_domain_summary.json", "r", encoding="utf-8") as f:
         data = json.load(f)
     craft_item_descriptions = data.get("craftItem", {})
-    
     nl_domain_list = [(f'{key}: {description}') for key, description in craft_item_descriptions.items()]
 
     with open("data/02_object_hierarchy.txt", "r") as f:
