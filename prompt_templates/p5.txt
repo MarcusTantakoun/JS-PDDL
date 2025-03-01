@@ -26,7 +26,7 @@ End your final answers underneath the headers: '### Action Parameters,' '### Act
 
 ### Action Parameters
 ```
-- ?t - type: 'parameter_description'
+- ?t - selected_type: 'parameter_description'
 ```
 
 ### Action Preconditions

@@ -23,9 +23,23 @@ Case study: Minecraft domain used in "Voyager" (Wang et al. 2023) to generate va
 """
 
 import os, json
-from l2p import *
+from l2p.llm_builder import LLM, OPENAI
+from l2p.domain_builder import DomainBuilder
+from l2p.utils import load_file
 from .pipelines.summarization import SummarizationStage
 from .pipelines.extraction import ExtractionStage
+
+REQUIREMENTS = [
+        ":strips",
+        ":typing",
+        ":equality",
+        ":negative-preconditions",
+        ":disjunctive-preconditions",
+        ":universal-preconditions",
+        ":conditional-effects",
+    ]
+
+UNSUPPORTED_KEYWORDS = ["object", "pddl", "lisp"]
 
 def run_JSPDDL_pipeline(
         model: LLM, 
@@ -40,23 +54,21 @@ def run_JSPDDL_pipeline(
 
     sum = SummarizationStage()
     ext = ExtractionStage()
+    domain_builder = DomainBuilder()
 
     sum.generate_nl_summary(model=model, p_action_name=p_action_name, 
                             js_function=func, prompt=prompts[0])
 
     p1 = sum.get_p1()
-    print(p1)
 
     sum.generate_goal_pre_eff_summary(model=llm, p_action_name=p_action_name, 
                                       nl_summary=p1, js_function=js_function, prompt=prompts[1])
     p2 = sum.get_p2()
-    print(p2)
 
     ext.extract_types(model=model, action_name=action_name, nl_domain=nl_domains[2], 
                       prompt=prompts[2], p1=p1, p2=p2, obj_hierarchy=obj_hierarchy)
     select_types = ext.get_types()
-    types_str = "\n".join(select_types)
-    print(select_types)
+    types_str = "\n".join(f"- {item}" for item in select_types)
 
     ext.extract_predicates(model=model, action_name=action_name, prompt=prompts[3], 
                            nl_domain=nl_domains[2], p1=p1, p2=p2, pred_list=pred_pool)
@@ -64,25 +76,38 @@ def run_JSPDDL_pipeline(
     predicates_str = "\n".join(
         [pred["clean"].replace(":", " ; ") for pred in select_predicates]
     )
-    print(select_predicates)
 
     ext.extract_pddl_action(model=model, action_name=action_name,
                             prompt=prompts[4], nl_domain=nl_domains[2], p1=p1, p2=p2, 
                             types=types_str, pred_list=predicates_str)
     action = ext.get_action()
-    print(action)
+    actions = [action]
 
     types = {
         name: description
-        for name, description in types.items()
-        if name not in unsupported_keywords
+        for name, description in select_types.items()
+        if name not in UNSUPPORTED_KEYWORDS
     }  # remove unsupported words
+    types_str = "\n".join(types)
 
     # format strings
     predicate_str = "\n".join(
-        [pred["clean"].replace(":", " ; ") for pred in predicates]
+        [pred["clean"].replace(":", " ; ") for pred in select_predicates]
     )
-    types_str = "\n".join(types)
+
+    pddl_domain = domain_builder.generate_domain(
+        domain="craftItem",
+        requirements=REQUIREMENTS,
+        types=types_str,
+        predicates=predicate_str,
+        actions=actions
+    )
+
+    output_file = "results/craftItem/03_domain.txt"
+
+    # Write the PDDL domain to the file
+    with open(output_file, "w", encoding="utf-8") as f:
+        f.write(pddl_domain)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,40 @@
+(define (domain craftItem)
+      (:requirements
+        :strips :typing :equality :negative-preconditions :disjunctive-preconditions :universal-preconditions :conditional-effects
+      )
+         (:types 
+      player
+      plankBlock
+      stickItem
+   )
+
+   (:predicates 
+      (HasPlankBlock ?agent - player ?plank - plankBlock) ;  'Indicates that the agent has a plank block.'
+      (HasStickItem ?agent - player ?stick - stickItem) ;  'Indicates that the agent has a stick item.'
+   )
+
+(:action 
+   :parameters (
+?player - player
+?plank1 - plankBlock
+?plank2 - plankBlock
+?stick1 - stickItem
+?stick2 - stickItem
+?stick3 - stickItem
+?stick4 - stickItem
+   )
+   :precondition
+(and
+    (HasPlankBlock ?player ?plank1) ; the player has the first plank block
+    (HasPlankBlock ?player ?plank2) ; the player has the second plank block
+    (not (= ?plank1 ?plank2)) ; the two planks must be distinct
+)
+   :effect
+(and
+    (HasStickItem ?player ?stick1) ; the player now has the first stick item
+    (HasStickItem ?player ?stick2) ; the player now has the second stick item
+    (HasStickItem ?player ?stick3) ; the player now has the third stick item
+    (HasStickItem ?player ?stick4) ; the player now has the fourth stick item
+)
+)
+)
