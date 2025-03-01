@@ -74,7 +74,7 @@ class ExtractionStage:
             model=model,
             domain_desc="",
             prompt_template=prompt,
-            action_name=""
+            action_name=action_name
         )
 
         self.extracted_action = action

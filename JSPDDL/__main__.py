@@ -22,7 +22,7 @@ Case study: Minecraft domain used in "Voyager" (Wang et al. 2023) to generate va
     - Wooden sword
 """
 
-import os, json
+import os
 from l2p.llm_builder import LLM, OPENAI
 from l2p.domain_builder import DomainBuilder
 from l2p.utils import load_file
@@ -49,7 +49,8 @@ def run_JSPDDL_pipeline(
         func: str, 
         nl_domains: list[str], 
         obj_hierarchy: str, 
-        pred_pool: str
+        pred_pool: str,
+        output_dir: str
         ) -> str:
 
     sum = SummarizationStage()
@@ -62,7 +63,7 @@ def run_JSPDDL_pipeline(
     p1 = sum.get_p1()
 
     sum.generate_goal_pre_eff_summary(model=llm, p_action_name=p_action_name, 
-                                      nl_summary=p1, js_function=js_function, prompt=prompts[1])
+                                      nl_summary=p1, js_function=func, prompt=prompts[1])
     p2 = sum.get_p2()
 
     ext.extract_types(model=model, action_name=action_name, nl_domain=nl_domains[2], 
@@ -81,33 +82,49 @@ def run_JSPDDL_pipeline(
                             prompt=prompts[4], nl_domain=nl_domains[2], p1=p1, p2=p2, 
                             types=types_str, pred_list=predicates_str)
     action = ext.get_action()
-    actions = [action]
 
-    types = {
-        name: description
-        for name, description in select_types.items()
-        if name not in UNSUPPORTED_KEYWORDS
-    }  # remove unsupported words
-    types_str = "\n".join(types)
+    generate_action(
+        domain_builder=domain_builder,
+        action=action,
+        output=output_dir
+        )
 
-    # format strings
-    predicate_str = "\n".join(
-        [pred["clean"].replace(":", " ; ") for pred in select_predicates]
-    )
+def generate_action(domain_builder, action, output):
+    
+    desc = ""
+    desc += domain_builder.action_desc(action)
 
-    pddl_domain = domain_builder.generate_domain(
-        domain="craftItem",
-        requirements=REQUIREMENTS,
-        types=types_str,
-        predicates=predicate_str,
-        actions=actions
-    )
+    # write the PDDL domain to the file
+    with open(output, "w", encoding="utf-8") as f:
+        f.write(desc)
 
-    output_file = "results/craftItem/03_domain.txt"
 
-    # Write the PDDL domain to the file
-    with open(output_file, "w", encoding="utf-8") as f:
-        f.write(pddl_domain)
+def get_prompts() -> list[str]:
+    prompt_1 = load_file(f'prompt_templates/p1.txt')
+    prompt_2 = load_file(f'prompt_templates/p2.txt')
+    prompt_3 = load_file(f'prompt_templates/p3.txt')
+    prompt_4 = load_file(f'prompt_templates/p4.txt')
+    prompt_5 = load_file(f'prompt_templates/p5.txt')
+
+    return [prompt_1, prompt_2, prompt_3, prompt_4, prompt_5]
+
+
+def get_assumptions(func_dir, nl_domain_dir, p_action: str, obj_hierarchy_dir, predicates_dir,):
+    js_func = load_file(func_dir)
+    nl_domain = load_file(nl_domain_dir)
+    descriptions = nl_domain.get(p_action, {})
+    nl_domain_list = [(f'{key}: {description}') for key, description in descriptions.items()]
+    obj_hierarchy = load_file(obj_hierarchy_dir)
+    pred_pool = load_file(predicates_dir)
+
+    assumptions = {
+        "js_func": js_func,
+        "nl_domain": nl_domain_list,
+        "object_hierarchy": obj_hierarchy,
+        "predicate_pool": pred_pool
+    }
+
+    return assumptions
 
 
 if __name__ == "__main__":
@@ -120,38 +137,27 @@ if __name__ == "__main__":
     # action name
     parent_action_name = "craftItem"
     action_name = "craftSticks"
+
+    assumptions = get_assumptions(
+        func_dir="data/04_craftItem.js",
+        nl_domain_dir="data/01_nl_domain_summary.json",
+        p_action=parent_action_name,
+        obj_hierarchy_dir="data/02_object_hierarchy.txt",
+        predicates_dir="data/03_predicate_pool.txt"
+    )
+
+    prompts = get_prompts()
     
-    # load in js function
-    with open("data/04_craftItem.js", "r", encoding="utf-8") as f:
-        js_function = f.read()
-
-    # load in NL domain
-    with open("data/01_nl_domain_summary.json", "r", encoding="utf-8") as f:
-        data = json.load(f)
-    craft_item_descriptions = data.get("craftItem", {})
-    nl_domain_list = [(f'{key}: {description}') for key, description in craft_item_descriptions.items()]
-
-    with open("data/02_object_hierarchy.txt", "r") as f:
-        obj_hierarchy = f.read()
-    with open("data/03_predicate_pool.txt", "r") as f:
-        pred_pool = f.read()
-
-    prompt_1 = load_file(f'prompt_templates/p1.txt')
-    prompt_2 = load_file(f'prompt_templates/p2.txt')
-    prompt_3 = load_file(f'prompt_templates/p3.txt')
-    prompt_4 = load_file(f'prompt_templates/p4.txt')
-    prompt_5 = load_file(f'prompt_templates/p5.txt')
-
-    prompts = [prompt_1, prompt_2, prompt_3, prompt_4, prompt_5]
-
+    output_dir = "results/craftItem/02_domain.txt"
 
     run_JSPDDL_pipeline(
         model=llm, 
         p_action_name=parent_action_name,
         action_name=action_name,
         prompts=prompts, 
-        func=js_function, 
-        nl_domains=nl_domain_list,
-        obj_hierarchy=obj_hierarchy,
-        pred_pool=pred_pool)
+        func=assumptions['js_func'], 
+        nl_domains=assumptions['nl_domain'],
+        obj_hierarchy=assumptions['object_hierarchy'],
+        pred_pool=assumptions['predicate_pool'],
+        output_dir=output_dir)
 
