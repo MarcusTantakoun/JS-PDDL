@@ -1,4 +1,4 @@
-# {JS-PDDL}
+# JS-PDDL: L2P Paper Recreation
 This is a paper recreation "Creating PDDL Models from Javascript using LLMs: Preliminary Results" (Sikes et al. 2024) using **Language-to-Plan (L2P)** 
 
 [Original Paper Link](https://openreview.net/pdf?id=VyTxXSPmbE)
@@ -13,3 +13,33 @@ Specifically, this recreation only tests out the Minecraft domain – `craftItem
 - sticks
 - wooden-planks
 - wooden-sword
+
+## Methodology
+![JSPDDL Framework](images/js-pddl-framework.png)
+
+**Motivation**
+Previous work has delved into natural language to PDDL generation; little work has delved into operational models to PDDL.
+
+1. Many automated bots exist to automate gameplay agents, so there is lots of code to draw from. 
+2. A set of wiki documents is available in the form of written natural language that one can use as input.
+
+## Assumptions
+This framework assumes the following (such that they are given to the LLM):
+- [x] `Javascript function`
+- [x] `Action name`
+- [x] `Action description`
+- [x] `Predicates`
+- [x] `Predicate descriptions`
+- [x] `Object types`
+
+LLM is tasked to derive:
+- **Stage 1**: General summary of Javascript function.
+- **Stage 2**: Summary of action goal, precondition, and effect – given Javascript function and *Stage 1*.
+- **Stage 3**: Select appropriate types given *Object Types* pool, *Stage 1+2*, and *action name+description*.
+- **Stage 4**: Select appropriate predicates given *Predicate* pool, *Stage 1+2*, and *action name+description*.
+- **Stage 5**: Extrapolate PDDL action given all previous stage information.
+
+## Experiment
+This recreation was using both GPT4o set on (temp=0.3 for summarization; temp=0.5 for extraction) for simplicity purposes. The original experiment used Llama3 for *summarization* stage (temp=0.3) and Codestral for *extraction* stage (0.1, 0.5, 0.75 and 1.0).
+
+Prompts can be found at ```prompt_templates```.

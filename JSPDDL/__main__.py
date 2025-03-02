@@ -33,7 +33,8 @@ from .pipelines.extraction import ExtractionStage
 
 
 def run_JSPDDL_pipeline(
-        model: LLM, 
+        s_1_model: LLM,
+        s_2_model: LLM,
         prompts: list[str], 
         p_action_name: str,
         action_name: str,
@@ -49,27 +50,27 @@ def run_JSPDDL_pipeline(
     ext = ExtractionStage()             # initialize extraction stage class
     domain_builder = DomainBuilder()    # initialize l2p builder class
 
-    log = "" # logging string for output
+    log = "\n\nLLM OUTPUTS:" # logging string for output
 
     # SUMMARIZATION STAGE
     # Stage 1
-    p1 = sum.generate_nl_summary(model, prompts['p1'], p_action_name, func)
+    p1 = sum.generate_nl_summary(s_1_model, prompts['p1'], p_action_name, func)
     log += f"\n\n[STAGE ONE OUTPUT]:\n{p1}"
 
     # Stage 2
-    p2 = sum.generate_goal_pre_eff_summary(model, prompts['p2'], p_action_name, func, p1)
+    p2 = sum.generate_goal_pre_eff_summary(s_1_model, prompts['p2'], p_action_name, func, p1)
     log += f"\n\n[STAGE TWO OUTPUT]:\n{p2}"
 
     # EXTRACTION STAGE
     # Stage 3
-    select_types, llm_output = ext.extract_types(model, domain_builder, prompts['p3'], 
+    select_types, llm_output = ext.extract_types(s_2_model, domain_builder, prompts['p3'], 
                                                  action_name, action_desc, p1, p2, obj_hierarchy)
 
     types_str = "\n".join(f"- {item}" for item in select_types)
     log += f"\n\n[STAGE THREE OUTPUT]:\n{llm_output}"
 
     # Stage 4
-    select_predicates, llm_output = ext.extract_predicates(model, domain_builder, prompts['p4'], 
+    select_predicates, llm_output = ext.extract_predicates(s_2_model, domain_builder, prompts['p4'], 
                                                            action_name, action_desc, p1, p2, pred_pool)
     
     predicates_str = "\n".join(
@@ -78,7 +79,7 @@ def run_JSPDDL_pipeline(
     log += f"\n\n[STAGE FOUR OUTPUT]:\n{llm_output}"
 
     # Stage 5
-    action, llm_output = ext.extract_pddl_action(model, domain_builder, prompts['p5'], action_name, 
+    action, llm_output = ext.extract_pddl_action(s_2_model, domain_builder, prompts['p5'], action_name, 
                                                  action_desc, p1, p2, types_str, predicates_str)
     
     log += f"\n\n[STAGE FIVE OUTPUT]:\n{llm_output}"
@@ -88,7 +89,9 @@ def run_JSPDDL_pipeline(
 
 def generate_action(domain_builder, action, log, output_dir):
     """Parse whole action together and log to output directory"""
-    desc = domain_builder.action_desc(action)
+    desc = "```\n"
+    desc += domain_builder.action_desc(action)
+    desc += "\n```"
     desc += log
 
     with open(output_dir, "w") as f:
@@ -152,18 +155,18 @@ if __name__ == "__main__":
         action_name = list(i.keys())[0]
         action_desc = list(i.values())[0]
 
-        # iterate trials on different temperature [0.0, 0.1, 0.2, 0.3]
-        for j in range(4):
+        for j in range(3):
 
-            temp = 0.0 + j*0.1
-            llm = OPENAI(model=engine, api_key=api_key, temperature=temp)
+            stage_1_llm = OPENAI(model=engine, api_key=api_key, temperature=0.3)
+            stage_2_llm = OPENAI(model=engine, api_key=api_key, temperature=0.5)
             
             # set output directory
             output_dir = f"results/craftItem/{action_name}/attempt_{j}.txt"
             os.makedirs(os.path.dirname(output_dir), exist_ok=True)
 
             run_JSPDDL_pipeline(
-                model=llm, 
+                s_1_model=stage_1_llm,
+                s_2_model=stage_2_llm, 
                 prompts=prompts,
                 p_action_name=p_action_name,
                 action_name=action_name,

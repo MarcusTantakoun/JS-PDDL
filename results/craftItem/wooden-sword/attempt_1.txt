@@ -1,108 +1,119 @@
+```
 (:action wooden-sword
    :parameters (
-        ?agent - player
-        ?plank1 - plankBlock
-        ?plank2 - plankBlock
-        ?stick - stickItem
-        ?table - craftTable
-        ?sword - woodenSword
+      ?agent - player
+      ?plank1 - plankBlock
+      ?plank2 - plankBlock
+      ?stick - stickItem
+      ?table - craftTable
+      ?sword - woodenSword
    )
    :precondition
-        (and
-            (HasPlankBlock ?agent ?plank1) ; The player has the first plank block.
-            (HasPlankBlock ?agent ?plank2) ; The player has the second plank block.
-            (not (= ?plank1 ?plank2)) ; The two plank blocks must be distinct.
-            (HasStickItem ?agent ?stick) ; The player has a stick item.
-            (HasCraftTable ?agent ?table) ; The player has a crafting table.
-        )
+      (and
+          (HasPlankBlock ?agent ?plank1) ; The player has the first plank block
+          (HasPlankBlock ?agent ?plank2) ; The player has the second plank block
+          (not (= ?plank1 ?plank2)) ; The two plank blocks must be distinct
+          (HasStickItem ?agent ?stick) ; The player has the stick item
+          (HasCraftTable ?agent ?table) ; The player has a crafting table
+      )
    :effect
-        (and
-            (HasWoodenSword ?agent ?sword) ; The player now has a wooden sword.
-        )
+      (and
+          (not (HasPlankBlock ?agent ?plank1)) ; The first plank block is used up
+          (not (HasPlankBlock ?agent ?plank2)) ; The second plank block is used up
+          (not (HasStickItem ?agent ?stick)) ; The stick item is used up
+          (HasWoodenSword ?agent ?sword) ; The player has a wooden sword after crafting
+      )
 )
-
-[STAGE ONE OUTPUT]:
-The `craftItem` function automates the crafting process in Minecraft by directing a bot to craft a specified item a given number of times. It first identifies the item and locates a nearby crafting table within a 32-block radius. The bot then navigates to the crafting table and executes the crafting recipe for the specified item using the provided count.
-
-[STAGE TWO OUTPUT]:
-The `craftItem` function aims to automate item crafting, requiring a nearby crafting table, and results in the bot crafting the specified item multiple times.
-
-[STAGE THREE OUTPUT]:
-To create a simple PDDL action for crafting a wooden sword in Minecraft, we need to consider the types that are directly involved in the crafting process. Based on the provided information, the relevant types are:
-
-1. **player**: Represents the entity performing the crafting action.
-2. **craftTable**: Required to execute the crafting action.
-3. **plankBlock**: Represents the material needed for crafting the wooden sword.
-4. **stickItem**: Another material required for crafting the wooden sword.
-5. **woodenSword**: The resulting item from the crafting action.
-
-These types are essential for defining the preconditions and effects of the crafting action in PDDL. Here's the output in the specified format:
-
-## OUTPUT
-```python
-{
-    "player": "The entity performing the crafting action.",
-    "craftTable": "Required to execute the crafting action.",
-    "plankBlock": "Material needed for crafting the wooden sword.",
-    "stickItem": "Material needed for crafting the wooden sword.",
-    "woodenSword": "The resulting item from the crafting action."
-}
 ```
 
+LLM OUTPUTS:
+
+[STAGE ONE OUTPUT]:
+The `craftItem` function automates the crafting process in Minecraft by directing a bot to craft a specified item. It first identifies the crafting table within a 32-block radius and navigates the bot to face it. The function then retrieves the appropriate recipe for the desired item and executes the crafting operation the specified number of times.
+
+[STAGE TWO OUTPUT]:
+The goal is to automate crafting; preconditions are having a crafting table placed; effects are crafting the specified item using the bot.
+
+[STAGE THREE OUTPUT]:
+To create a simple PDDL action for crafting a wooden sword in Minecraft, we need to consider the types that are involved in the process. The action requires a player, a crafting table, two planks, and one stick. The result of the action is a wooden sword. Therefore, the relevant types from the provided list are:
+
+1. `player`: This type is needed because the player is the one performing the crafting action.
+2. `craftTable`: This type is needed because the crafting action requires a crafting table to be executed.
+3. `plankBlock`: This type is needed because two planks are required as part of the recipe for crafting a wooden sword.
+4. `stickItem`: This type is needed because one stick is required as part of the recipe for crafting a wooden sword.
+5. `woodenSword`: This type is needed as it represents the outcome of the crafting action.
+
+Based on these considerations, the types we need to include are `player`, `craftTable`, `plankBlock`, `stickItem`, and `woodenSword`.
+
+## OUTPUT
+{
+    "player": "The entity performing the crafting action.",
+    "craftTable": "The object necessary to perform crafting actions.",
+    "plankBlock": "A component of the wooden sword recipe.",
+    "stickItem": "A component of the wooden sword recipe.",
+    "woodenSword": "The result of the crafting action."
+}
+
 [STAGE FOUR OUTPUT]:
-Based on the requirements for crafting a wooden sword in Minecraft, the relevant predicates from the list provided are:
+Based on the recipe for crafting a wooden sword in Minecraft and the provided predicates, the necessary predicates for this action are:
 
 1. The player must have two planks.
 2. The player must have one stick.
 3. The player must have a crafting table.
-4. The effect of the action is that the player has a wooden sword.
+4. The effect is that the player will have a wooden sword.
 
-Therefore, the predicates you would need are:
+From the list of predicates, the ones that are relevant to these conditions are:
 
-- (HasPlankBlock ?agent - player ?plank - plankBlock)
-- (HasStickItem ?agent - player ?stick - stickItem)
-- (HasCraftTable ?agent - player ?table - craftTable)
-- (HasWoodenSword ?agent - player ?sword - woodenSword)
+- (HasPlankBlock ?agent - player ?plank - plankBlock): This predicate indicates that the player has a plank block, which is required for crafting a wooden sword.
+- (HasStickItem ?agent - player ?stick - stickItem): This predicate indicates that the player has a stick item, which is required for crafting a wooden sword.
+- (HasCraftTable ?agent - player ?table - craftTable): This predicate indicates that the player has a crafting table, which is necessary to perform the crafting action.
+- (HasWoodenSword ?agent - player ?sword - woodenSword): This predicate indicates the effect of the action, which is that the player will have a wooden sword after the crafting process.
 
 ### New Predicates
 ```
-- (HasPlankBlock ?agent - player ?plank - plankBlock): 'The player has a plank block.'
-- (HasStickItem ?agent - player ?stick - stickItem): 'The player has a stick item.'
-- (HasCraftTable ?agent - player ?table - craftTable): 'The player has a crafting table.'
-- (HasWoodenSword ?agent - player ?sword - woodenSword): 'The player has a wooden sword.'
+- (HasPlankBlock ?agent - player ?plank - plankBlock): 'The player has a plank block, necessary for crafting a wooden sword.'
+- (HasStickItem ?agent - player ?stick - stickItem): 'The player has a stick item, necessary for crafting a wooden sword.'
+- (HasCraftTable ?agent - player ?table - craftTable): 'The player has a crafting table, necessary to execute the crafting action.'
+- (HasWoodenSword ?agent - player ?sword - woodenSword): 'The player has a wooden sword after the crafting process is completed.'
 ```
 
 [STAGE FIVE OUTPUT]:
-Here is the PDDL action for crafting a wooden sword in Minecraft:
+Here is the PDDL action for crafting a wooden sword in Minecraft, following the given specifications:
 
 ### Action Parameters
 ```
-- ?agent - player: 'The player who is crafting the wooden sword.'
-- ?plank1 - plankBlock: 'The first plank block used in crafting.'
-- ?plank2 - plankBlock: 'The second plank block used in crafting.'
-- ?stick - stickItem: 'The stick item used in crafting.'
-- ?table - craftTable: 'The crafting table used for crafting.'
-- ?sword - woodenSword: 'The wooden sword that will be crafted.'
+- ?agent - player: 'the player performing the crafting action'
+- ?plank1 - plankBlock: 'the first plank block required for crafting the wooden sword'
+- ?plank2 - plankBlock: 'the second plank block required for crafting the wooden sword'
+- ?stick - stickItem: 'the stick item required for crafting the wooden sword'
+- ?table - craftTable: 'the crafting table required to perform the crafting action'
+- ?sword - woodenSword: 'the resulting wooden sword after crafting'
 ```
 
 ### Action Preconditions
 ```
 (and
-    (HasPlankBlock ?agent ?plank1) ; The player has the first plank block.
-    (HasPlankBlock ?agent ?plank2) ; The player has the second plank block.
-    (not (= ?plank1 ?plank2)) ; The two plank blocks must be distinct.
-    (HasStickItem ?agent ?stick) ; The player has a stick item.
-    (HasCraftTable ?agent ?table) ; The player has a crafting table.
+    (HasPlankBlock ?agent ?plank1) ; The player has the first plank block
+    (HasPlankBlock ?agent ?plank2) ; The player has the second plank block
+    (not (= ?plank1 ?plank2)) ; The two plank blocks must be distinct
+    (HasStickItem ?agent ?stick) ; The player has the stick item
+    (HasCraftTable ?agent ?table) ; The player has a crafting table
 )
 ```
 
 ### Action Effects
 ```
 (and
-    (HasWoodenSword ?agent ?sword) ; The player now has a wooden sword.
+    (not (HasPlankBlock ?agent ?plank1)) ; The first plank block is used up
+    (not (HasPlankBlock ?agent ?plank2)) ; The second plank block is used up
+    (not (HasStickItem ?agent ?stick)) ; The stick item is used up
+    (HasWoodenSword ?agent ?sword) ; The player has a wooden sword after crafting
 )
 ```
 
 ### New Predicates
 ```
-```
+
+``` 
+
+This PDDL action captures the process of crafting a wooden sword in Minecraft, ensuring that all necessary items are present and distinct, and correctly updating the player's inventory after the crafting operation.
