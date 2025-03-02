@@ -1,0 +1,101 @@
+(:action wooden-sword
+   :parameters (
+        ?agent - player
+        ?plank1 - plankBlock
+        ?plank2 - plankBlock
+        ?stick - stickItem
+        ?table - craftTable
+        ?sword - woodenSword
+   )
+   :precondition
+        (and
+            (HasPlankBlock ?agent ?plank1) ; The player has the first plank block.
+            (HasPlankBlock ?agent ?plank2) ; The player has the second plank block.
+            (not (= ?plank1 ?plank2)) ; The two plank blocks must be distinct.
+            (HasStickItem ?agent ?stick) ; The player has the stick item.
+            (HasCraftTable ?agent ?table) ; The player has a crafting table.
+        )
+   :effect
+        (and
+            (HasWoodenSword ?agent ?sword) ; The player now has a wooden sword.
+        )
+)
+
+[STAGE ONE OUTPUT]:
+The `craftItem` function automates the crafting process in Minecraft by directing a bot to craft a specified item using a crafting table. It first identifies the item and locates a nearby crafting table within a 32-block radius. The bot then moves to the crafting table and executes the crafting recipe for the specified item and quantity. This function requires the crafting table to be placed before execution.
+
+[STAGE TWO OUTPUT]:
+The `craftItem` function aims to automate item crafting using a crafting table, requiring the table's prior placement, and results in the specified item being crafted.
+
+[STAGE THREE OUTPUT]:
+To create a simple PDDL action for crafting a wooden sword in Minecraft, we need to consider the types that are directly involved in the crafting process. Based on the provided information, the relevant types are:
+
+1. **player**: The entity performing the crafting action.
+2. **craftTable**: The object required to perform the crafting action.
+3. **plankBlock**: The material needed to craft the wooden sword.
+4. **stickItem**: Another material needed to craft the wooden sword.
+5. **woodenSword**: The result of the crafting action.
+
+The other types, such as `woodBlock`, `woodenPickaxe`, and `gridSquare`, are not directly involved in the crafting of a wooden sword and are therefore not needed for this specific action.
+
+## OUTPUT
+```python
+{
+    "player": "The entity performing the crafting action",
+    "craftTable": "The object required to perform the crafting action",
+    "plankBlock": "The material needed to craft the wooden sword",
+    "stickItem": "Another material needed to craft the wooden sword",
+    "woodenSword": "The result of the crafting action"
+}
+```
+
+[STAGE FOUR OUTPUT]:
+Based on the given recipe for crafting a wooden sword in Minecraft, the necessary predicates from the list are those that ensure the player has the required materials (two planks and one stick), a crafting table, and the resulting effect of having a wooden sword. Here are the predicates you would need:
+
+1. (HasPlankBlock ?agent - player ?plank - plankBlock)
+2. (HasStickItem ?agent - player ?stick - stickItem)
+3. (HasCraftTable ?agent - player ?table - craftTable)
+4. (HasWoodenSword ?agent - player ?sword - woodenSword)
+
+### New Predicates
+```
+- (HasPlankBlock ?agent - player ?plank - plankBlock): 'Indicates the player has a plank block.'
+- (HasStickItem ?agent - player ?stick - stickItem): 'Indicates the player has a stick item.'
+- (HasCraftTable ?agent - player ?table - craftTable): 'Indicates the player has a crafting table.'
+- (HasWoodenSword ?agent - player ?sword - woodenSword): 'Indicates the player has a wooden sword.'
+```
+
+[STAGE FIVE OUTPUT]:
+Here is the PDDL action for crafting a wooden sword in Minecraft:
+
+### Action Parameters
+```
+- ?agent - player: 'The player who is crafting the wooden sword.'
+- ?plank1 - plankBlock: 'The first plank block used in crafting.'
+- ?plank2 - plankBlock: 'The second plank block used in crafting.'
+- ?stick - stickItem: 'The stick item used in crafting.'
+- ?table - craftTable: 'The crafting table used for crafting.'
+- ?sword - woodenSword: 'The wooden sword that will be crafted.'
+```
+
+### Action Preconditions
+```
+(and
+    (HasPlankBlock ?agent ?plank1) ; The player has the first plank block.
+    (HasPlankBlock ?agent ?plank2) ; The player has the second plank block.
+    (not (= ?plank1 ?plank2)) ; The two plank blocks must be distinct.
+    (HasStickItem ?agent ?stick) ; The player has the stick item.
+    (HasCraftTable ?agent ?table) ; The player has a crafting table.
+)
+```
+
+### Action Effects
+```
+(and
+    (HasWoodenSword ?agent ?sword) ; The player now has a wooden sword.
+)
+```
+
+### New Predicates
+```
+```

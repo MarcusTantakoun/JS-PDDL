@@ -1,0 +1,116 @@
+(:action crafting-table
+   :parameters (
+      ?agent - player
+      ?plank1 - plankBlock
+      ?plank2 - plankBlock
+      ?plank3 - plankBlock
+      ?plank4 - plankBlock
+      ?table - craftTable
+   )
+   :precondition
+      (and
+         (HasPlankBlock ?agent ?plank1) ; The player has the first plank block
+         (HasPlankBlock ?agent ?plank2) ; The player has the second plank block
+         (HasPlankBlock ?agent ?plank3) ; The player has the third plank block
+         (HasPlankBlock ?agent ?plank4) ; The player has the fourth plank block
+         (not (= ?plank1 ?plank2)) ; Ensure the first and second planks are distinct
+         (not (= ?plank1 ?plank3)) ; Ensure the first and third planks are distinct
+         (not (= ?plank1 ?plank4)) ; Ensure the first and fourth planks are distinct
+         (not (= ?plank2 ?plank3)) ; Ensure the second and third planks are distinct
+         (not (= ?plank2 ?plank4)) ; Ensure the second and fourth planks are distinct
+         (not (= ?plank3 ?plank4)) ; Ensure the third and fourth planks are distinct
+      )
+   :effect
+      (and
+         (HasCraftTable ?agent ?table) ; The player now has a crafting table
+         (not (HasPlankBlock ?agent ?plank1)) ; The first plank block is used up
+         (not (HasPlankBlock ?agent ?plank2)) ; The second plank block is used up
+         (not (HasPlankBlock ?agent ?plank3)) ; The third plank block is used up
+         (not (HasPlankBlock ?agent ?plank4)) ; The fourth plank block is used up
+      )
+)
+
+[STAGE ONE OUTPUT]:
+The `craftItem` function automates the crafting process in Minecraft by directing a bot to craft a specified item a given number of times. It first identifies the item and locates a nearby crafting table. The bot then navigates to the crafting table and executes the crafting recipe for the item using the specified count.
+
+[STAGE TWO OUTPUT]:
+The `craftItem` function aims to automate item crafting, requiring a placed crafting table, and results in the bot crafting the specified item the desired number of times.
+
+[STAGE THREE OUTPUT]:
+To create a simple PDDL action for crafting a crafting table in Minecraft, we need to consider the types involved in the action. Based on the provided summary and the types available, we can identify the following relevant types:
+
+1. **player**: This type represents the player or bot performing the crafting action.
+2. **plankBlock**: This type represents the individual planks required to craft the crafting table.
+3. **craftTable**: This type represents the crafting table that is the result of the crafting action.
+
+These types are essential for defining the preconditions and effects of the crafting action in PDDL. The player needs to have the required planks, and the result of the action is the creation of a crafting table.
+
+## OUTPUT
+```python
+{
+    "player": "Represents the player or bot performing the crafting action",
+    "plankBlock": "Represents the individual planks required to craft the crafting table",
+    "craftTable": "Represents the crafting table that is the result of the crafting action",
+}
+```
+
+[STAGE FOUR OUTPUT]:
+To create a simple PDDL action for crafting a crafting table in Minecraft, we need to consider the preconditions and effects based on the given recipe and the crafting process. The precondition is that the player must have 4 individual planks, and the effect is that the player will have one crafting table. Based on the provided predicates, we can select the following:
+
+1. **Precondition**: The player must have 4 individual planks.
+   - (HasPlankBlock ?agent - player ?plank - plankBlock)
+
+2. **Effect**: The player will have one crafting table.
+   - (HasCraftTable ?agent - player ?table - craftTable)
+
+These predicates are sufficient to define the crafting action for a crafting table in PDDL. Here are the selected predicates:
+
+### New Predicates
+```
+- (HasPlankBlock ?agent - player ?plank - plankBlock): 'The player has a plank block.'
+- (HasCraftTable ?agent - player ?table - craftTable): 'The player has a crafting table.'
+```
+
+[STAGE FIVE OUTPUT]:
+Here is the PDDL action for crafting a crafting table in Minecraft:
+
+### Action Parameters
+```
+- ?agent - player: 'The player who is crafting the table'
+- ?plank1 - plankBlock: 'First plank block'
+- ?plank2 - plankBlock: 'Second plank block'
+- ?plank3 - plankBlock: 'Third plank block'
+- ?plank4 - plankBlock: 'Fourth plank block'
+- ?table - craftTable: 'The resulting crafting table'
+```
+
+### Action Preconditions
+```
+(and
+    (HasPlankBlock ?agent ?plank1) ; The player has the first plank block
+    (HasPlankBlock ?agent ?plank2) ; The player has the second plank block
+    (HasPlankBlock ?agent ?plank3) ; The player has the third plank block
+    (HasPlankBlock ?agent ?plank4) ; The player has the fourth plank block
+    (not (= ?plank1 ?plank2)) ; Ensure the first and second planks are distinct
+    (not (= ?plank1 ?plank3)) ; Ensure the first and third planks are distinct
+    (not (= ?plank1 ?plank4)) ; Ensure the first and fourth planks are distinct
+    (not (= ?plank2 ?plank3)) ; Ensure the second and third planks are distinct
+    (not (= ?plank2 ?plank4)) ; Ensure the second and fourth planks are distinct
+    (not (= ?plank3 ?plank4)) ; Ensure the third and fourth planks are distinct
+)
+```
+
+### Action Effects
+```
+(and
+    (HasCraftTable ?agent ?table) ; The player now has a crafting table
+    (not (HasPlankBlock ?agent ?plank1)) ; The first plank block is used up
+    (not (HasPlankBlock ?agent ?plank2)) ; The second plank block is used up
+    (not (HasPlankBlock ?agent ?plank3)) ; The third plank block is used up
+    (not (HasPlankBlock ?agent ?plank4)) ; The fourth plank block is used up
+)
+```
+
+### New Predicates
+```
+```

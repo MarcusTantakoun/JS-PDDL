@@ -3,7 +3,7 @@ You are a helpful assistant that is an expert in writing PDDL actions. Your task
 
 Base the action you create on the following summary of a generic Minecraft action: {p1} {p2}
 
-The recipe to craft sticks in Minecraft is: {nl_domain}
+The recipe to {action_name} in Minecraft is: {action_desc}
 
 Make this action using the Minecraft recipe, and the following types and predicates:
 Types: 

@@ -20,6 +20,8 @@ Case study: Minecraft domain used in "Voyager" (Wang et al. 2023) to generate va
     - Planks
     - Sticks
     - Wooden sword
+
+Results found in results/craftItem
 """
 
 import os
@@ -29,97 +31,96 @@ from l2p.utils import load_file
 from .pipelines.summarization import SummarizationStage
 from .pipelines.extraction import ExtractionStage
 
-REQUIREMENTS = [
-        ":strips",
-        ":typing",
-        ":equality",
-        ":negative-preconditions",
-        ":disjunctive-preconditions",
-        ":universal-preconditions",
-        ":conditional-effects",
-    ]
-
-UNSUPPORTED_KEYWORDS = ["object", "pddl", "lisp"]
 
 def run_JSPDDL_pipeline(
         model: LLM, 
+        prompts: list[str], 
         p_action_name: str,
         action_name: str,
-        prompts: list[str], 
-        func: str, 
-        nl_domains: list[str], 
+        action_desc: str,
+        func: str,
         obj_hierarchy: str, 
         pred_pool: str,
         output_dir: str
         ) -> str:
+    """Main function to run JSPDDL pipeline"""
 
-    sum = SummarizationStage()
-    ext = ExtractionStage()
-    domain_builder = DomainBuilder()
+    sum = SummarizationStage()          # initialize summarization stage class
+    ext = ExtractionStage()             # initialize extraction stage class
+    domain_builder = DomainBuilder()    # initialize l2p builder class
 
-    sum.generate_nl_summary(model=model, p_action_name=p_action_name, 
-                            js_function=func, prompt=prompts[0])
+    log = "" # logging string for output
 
-    p1 = sum.get_p1()
+    # SUMMARIZATION STAGE
+    # Stage 1
+    p1 = sum.generate_nl_summary(model, prompts['p1'], p_action_name, func)
+    log += f"\n\n[STAGE ONE OUTPUT]:\n{p1}"
 
-    sum.generate_goal_pre_eff_summary(model=llm, p_action_name=p_action_name, 
-                                      nl_summary=p1, js_function=func, prompt=prompts[1])
-    p2 = sum.get_p2()
+    # Stage 2
+    p2 = sum.generate_goal_pre_eff_summary(model, prompts['p2'], p_action_name, func, p1)
+    log += f"\n\n[STAGE TWO OUTPUT]:\n{p2}"
 
-    ext.extract_types(model=model, action_name=action_name, nl_domain=nl_domains[2], 
-                      prompt=prompts[2], p1=p1, p2=p2, obj_hierarchy=obj_hierarchy)
-    select_types = ext.get_types()
+    # EXTRACTION STAGE
+    # Stage 3
+    select_types, llm_output = ext.extract_types(model, domain_builder, prompts['p3'], 
+                                                 action_name, action_desc, p1, p2, obj_hierarchy)
+
     types_str = "\n".join(f"- {item}" for item in select_types)
+    log += f"\n\n[STAGE THREE OUTPUT]:\n{llm_output}"
 
-    ext.extract_predicates(model=model, action_name=action_name, prompt=prompts[3], 
-                           nl_domain=nl_domains[2], p1=p1, p2=p2, pred_list=pred_pool)
-    select_predicates = ext.get_predicates()
+    # Stage 4
+    select_predicates, llm_output = ext.extract_predicates(model, domain_builder, prompts['p4'], 
+                                                           action_name, action_desc, p1, p2, pred_pool)
+    
     predicates_str = "\n".join(
         [pred["clean"].replace(":", " ; ") for pred in select_predicates]
     )
+    log += f"\n\n[STAGE FOUR OUTPUT]:\n{llm_output}"
 
-    ext.extract_pddl_action(model=model, action_name=action_name,
-                            prompt=prompts[4], nl_domain=nl_domains[2], p1=p1, p2=p2, 
-                            types=types_str, pred_list=predicates_str)
-    action = ext.get_action()
-
-    generate_action(
-        domain_builder=domain_builder,
-        action=action,
-        output=output_dir
-        )
-
-def generate_action(domain_builder, action, output):
+    # Stage 5
+    action, llm_output = ext.extract_pddl_action(model, domain_builder, prompts['p5'], action_name, 
+                                                 action_desc, p1, p2, types_str, predicates_str)
     
-    desc = ""
-    desc += domain_builder.action_desc(action)
+    log += f"\n\n[STAGE FIVE OUTPUT]:\n{llm_output}"
 
-    # write the PDDL domain to the file
-    with open(output, "w", encoding="utf-8") as f:
+    generate_action(domain_builder, action, log, output_dir) # parse action together
+
+
+def generate_action(domain_builder, action, log, output_dir):
+    """Parse whole action together and log to output directory"""
+    desc = domain_builder.action_desc(action)
+    desc += log
+
+    with open(output_dir, "w") as f:
         f.write(desc)
 
 
-def get_prompts() -> list[str]:
-    prompt_1 = load_file(f'prompt_templates/p1.txt')
-    prompt_2 = load_file(f'prompt_templates/p2.txt')
-    prompt_3 = load_file(f'prompt_templates/p3.txt')
-    prompt_4 = load_file(f'prompt_templates/p4.txt')
-    prompt_5 = load_file(f'prompt_templates/p5.txt')
+def get_prompts():
+    """Retrieve all prompts into list"""
+    prompts = {
+        "p1": load_file(f'prompt_templates/p1.txt'),
+        "p2": load_file(f'prompt_templates/p2.txt'),
+        "p3": load_file(f'prompt_templates/p3.txt'),
+        "p4": load_file(f'prompt_templates/p4.txt'),
+        "p5": load_file(f'prompt_templates/p5.txt')
+    }
 
-    return [prompt_1, prompt_2, prompt_3, prompt_4, prompt_5]
+    return prompts
 
 
 def get_assumptions(func_dir, nl_domain_dir, p_action: str, obj_hierarchy_dir, predicates_dir,):
+    """Retrieves all assumptions and put it into dictionary"""
+
     js_func = load_file(func_dir)
     nl_domain = load_file(nl_domain_dir)
     descriptions = nl_domain.get(p_action, {})
-    nl_domain_list = [(f'{key}: {description}') for key, description in descriptions.items()]
+    nl_domain_list = [{key: description} for key, description in descriptions.items()]
     obj_hierarchy = load_file(obj_hierarchy_dir)
     pred_pool = load_file(predicates_dir)
 
     assumptions = {
         "js_func": js_func,
-        "nl_domain": nl_domain_list,
+        "nl_domain_list": nl_domain_list,
         "object_hierarchy": obj_hierarchy,
         "predicate_pool": pred_pool
     }
@@ -130,34 +131,45 @@ def get_assumptions(func_dir, nl_domain_dir, p_action: str, obj_hierarchy_dir, p
 if __name__ == "__main__":
 
     # load in model
-    engine = "gpt-4o-mini"
+    engine = "gpt-4o"
     api_key = os.environ.get("OPENAI_API_KEY")
-    llm = OPENAI(model=engine, api_key=api_key)
 
-    # action name
-    parent_action_name = "craftItem"
-    action_name = "craftSticks"
+    p_action_name = "craftItem" # parent action name
 
+    # load in assumptions
     assumptions = get_assumptions(
-        func_dir="data/04_craftItem.js",
-        nl_domain_dir="data/01_nl_domain_summary.json",
-        p_action=parent_action_name,
-        obj_hierarchy_dir="data/02_object_hierarchy.txt",
-        predicates_dir="data/03_predicate_pool.txt"
+        func_dir="data/04_craftItem.js",                    # javascript function
+        nl_domain_dir="data/01_nl_domain_summary.json",     # NL domain
+        p_action=p_action_name,                             # parent action name
+        obj_hierarchy_dir="data/02_object_hierarchy.txt",   # object type hierarchy
+        predicates_dir="data/03_predicate_pool.txt"         # predicate pool
     )
 
-    prompts = get_prompts()
-    
-    output_dir = "results/craftItem/02_domain.txt"
+    prompts = get_prompts() # load in prompts
 
-    run_JSPDDL_pipeline(
-        model=llm, 
-        p_action_name=parent_action_name,
-        action_name=action_name,
-        prompts=prompts, 
-        func=assumptions['js_func'], 
-        nl_domains=assumptions['nl_domain'],
-        obj_hierarchy=assumptions['object_hierarchy'],
-        pred_pool=assumptions['predicate_pool'],
-        output_dir=output_dir)
+    # iterate through each action in parent function
+    for i in assumptions['nl_domain_list']:
+        action_name = list(i.keys())[0]
+        action_desc = list(i.values())[0]
+
+        # iterate trials on different temperature [0.0, 0.1, 0.2, 0.3]
+        for j in range(4):
+
+            temp = 0.0 + j*0.1
+            llm = OPENAI(model=engine, api_key=api_key, temperature=temp)
+            
+            # set output directory
+            output_dir = f"results/craftItem/{action_name}/attempt_{j}.txt"
+            os.makedirs(os.path.dirname(output_dir), exist_ok=True)
+
+            run_JSPDDL_pipeline(
+                model=llm, 
+                prompts=prompts,
+                p_action_name=p_action_name,
+                action_name=action_name,
+                action_desc=action_desc, 
+                func=assumptions['js_func'], 
+                obj_hierarchy=assumptions['object_hierarchy'],
+                pred_pool=assumptions['predicate_pool'],
+                output_dir=output_dir)
 

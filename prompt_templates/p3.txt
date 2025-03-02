@@ -1,4 +1,4 @@
-The recipe to {action_name} in Minecraft is: {nl_domain}
+The recipe to {action_name} in Minecraft is: {action_desc}
 
 If you were asked to create a simple PDDL {action_name} action, which of these types would you need?
 

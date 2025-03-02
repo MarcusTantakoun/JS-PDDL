@@ -2,7 +2,7 @@ If you were asked to create a simple PDDL {action_name} action, what predicates 
 
 {predicate_list}
 
-The recipe to craft sticks in Minecraft is: {nl_domain}
+The recipe to {action_name} in Minecraft is: {action_desc}
 
 Base the predicates you select on the following summary of a generic Minecraft action: {p1} {p2}
 

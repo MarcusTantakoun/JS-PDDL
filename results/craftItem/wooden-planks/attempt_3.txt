@@ -1,0 +1,125 @@
+(:action wooden-planks
+   :parameters (
+        ?agent - player
+        ?wood1 - woodBlock
+        ?wood2 - woodBlock
+        ?wood3 - woodBlock
+        ?wood4 - woodBlock
+        ?plank1 - plankBlock
+        ?plank2 - plankBlock
+        ?plank3 - plankBlock
+        ?plank4 - plankBlock
+   )
+   :precondition
+        (and
+            (HasWoodBlock ?agent ?wood1) ; The player has the first wood block.
+            (HasWoodBlock ?agent ?wood2) ; The player has the second wood block.
+            (HasWoodBlock ?agent ?wood3) ; The player has the third wood block.
+            (HasWoodBlock ?agent ?wood4) ; The player has the fourth wood block.
+            (not (= ?wood1 ?wood2)) ; Ensure the first and second wood blocks are distinct.
+            (not (= ?wood1 ?wood3)) ; Ensure the first and third wood blocks are distinct.
+            (not (= ?wood1 ?wood4)) ; Ensure the first and fourth wood blocks are distinct.
+            (not (= ?wood2 ?wood3)) ; Ensure the second and third wood blocks are distinct.
+            (not (= ?wood2 ?wood4)) ; Ensure the second and fourth wood blocks are distinct.
+            (not (= ?wood3 ?wood4)) ; Ensure the third and fourth wood blocks are distinct.
+        )
+   :effect
+        (and
+            (not (HasWoodBlock ?agent ?wood1)) ; The player no longer has the first wood block.
+            (not (HasWoodBlock ?agent ?wood2)) ; The player no longer has the second wood block.
+            (not (HasWoodBlock ?agent ?wood3)) ; The player no longer has the third wood block.
+            (not (HasWoodBlock ?agent ?wood4)) ; The player no longer has the fourth wood block.
+            (HasPlankBlock ?agent ?plank1) ; The player has the first plank block.
+            (HasPlankBlock ?agent ?plank2) ; The player has the second plank block.
+            (HasPlankBlock ?agent ?plank3) ; The player has the third plank block.
+            (HasPlankBlock ?agent ?plank4) ; The player has the fourth plank block.
+        )
+)
+
+[STAGE ONE OUTPUT]:
+The `craftItem` function automates the crafting of a specified item using a Minecraft bot. It first identifies the item to be crafted and locates a nearby crafting table. The bot then navigates to the crafting table and retrieves the appropriate recipe for the item. Finally, it executes the crafting process for the specified number of times.
+
+[STAGE TWO OUTPUT]:
+The `craftItem` function aims to automate item crafting using a bot, requiring a nearby crafting table, and results in the specified item being crafted.
+
+[STAGE THREE OUTPUT]:
+To create a simple PDDL wooden-planks action, we need to consider the types involved in the action of crafting wooden planks. Based on the given information, the relevant types are:
+
+1. **player**: This type represents the player who performs the crafting action.
+2. **woodBlock**: This type represents the wood blocks that are used as input for crafting wooden planks.
+3. **plankBlock**: This type represents the wooden planks that are the result of the crafting action.
+
+The crafting of wooden planks does not require a crafting table, so the type `craftTable` is not needed. Other types like `stickItem`, `woodenSword`, and `woodenPickaxe` are not relevant to this specific action.
+
+## OUTPUT
+```python
+{
+    "player": "The entity performing the crafting action.",
+    "woodBlock": "The input material required to craft wooden planks.",
+    "plankBlock": "The output product of the crafting action."
+}
+```
+
+[STAGE FOUR OUTPUT]:
+To create a simple PDDL action for crafting wooden planks from wood blocks, we need to focus on the predicates that involve the player's possession of wood blocks and planks. Based on the description provided, the relevant predicates are:
+
+1. (HasWoodBlock ?agent - player ?wood - woodBlock)
+2. (HasPlankBlock ?agent - player ?plank - plankBlock)
+
+These predicates will help us define the precondition (having four wood blocks) and the effect (having four plank blocks) of the action.
+
+### New Predicates
+```
+- (HasWoodBlock ?agent - player ?wood - woodBlock): 'Indicates that the player has a wood block.'
+- (HasPlankBlock ?agent - player ?plank - plankBlock): 'Indicates that the player has a plank block.'
+```
+
+[STAGE FIVE OUTPUT]:
+Here is the PDDL action for crafting wooden planks in Minecraft based on your requirements:
+
+### Action Parameters
+```
+- ?agent - player: 'The player who is crafting the wooden planks.'
+- ?wood1 - woodBlock: 'The first wood block.'
+- ?wood2 - woodBlock: 'The second wood block.'
+- ?wood3 - woodBlock: 'The third wood block.'
+- ?wood4 - woodBlock: 'The fourth wood block.'
+- ?plank1 - plankBlock: 'The first resulting plank block.'
+- ?plank2 - plankBlock: 'The second resulting plank block.'
+- ?plank3 - plankBlock: 'The third resulting plank block.'
+- ?plank4 - plankBlock: 'The fourth resulting plank block.'
+```
+
+### Action Preconditions
+```
+(and
+    (HasWoodBlock ?agent ?wood1) ; The player has the first wood block.
+    (HasWoodBlock ?agent ?wood2) ; The player has the second wood block.
+    (HasWoodBlock ?agent ?wood3) ; The player has the third wood block.
+    (HasWoodBlock ?agent ?wood4) ; The player has the fourth wood block.
+    (not (= ?wood1 ?wood2)) ; Ensure the first and second wood blocks are distinct.
+    (not (= ?wood1 ?wood3)) ; Ensure the first and third wood blocks are distinct.
+    (not (= ?wood1 ?wood4)) ; Ensure the first and fourth wood blocks are distinct.
+    (not (= ?wood2 ?wood3)) ; Ensure the second and third wood blocks are distinct.
+    (not (= ?wood2 ?wood4)) ; Ensure the second and fourth wood blocks are distinct.
+    (not (= ?wood3 ?wood4)) ; Ensure the third and fourth wood blocks are distinct.
+)
+```
+
+### Action Effects
+```
+(and
+    (not (HasWoodBlock ?agent ?wood1)) ; The player no longer has the first wood block.
+    (not (HasWoodBlock ?agent ?wood2)) ; The player no longer has the second wood block.
+    (not (HasWoodBlock ?agent ?wood3)) ; The player no longer has the third wood block.
+    (not (HasWoodBlock ?agent ?wood4)) ; The player no longer has the fourth wood block.
+    (HasPlankBlock ?agent ?plank1) ; The player has the first plank block.
+    (HasPlankBlock ?agent ?plank2) ; The player has the second plank block.
+    (HasPlankBlock ?agent ?plank3) ; The player has the third plank block.
+    (HasPlankBlock ?agent ?plank4) ; The player has the fourth plank block.
+)
+```
+
+### New Predicates
+```
+```

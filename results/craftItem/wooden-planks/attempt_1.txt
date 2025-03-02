@@ -1,0 +1,130 @@
+(:action wooden-planks
+   :parameters (
+        ?agent - player
+        ?wood1 - woodBlock
+        ?wood2 - woodBlock
+        ?wood3 - woodBlock
+        ?wood4 - woodBlock
+        ?plank1 - plankBlock
+        ?plank2 - plankBlock
+        ?plank3 - plankBlock
+        ?plank4 - plankBlock
+   )
+   :precondition
+        (and
+            (HasWoodBlock ?agent ?wood1) ; The player has the first wood block
+            (HasWoodBlock ?agent ?wood2) ; The player has the second wood block
+            (HasWoodBlock ?agent ?wood3) ; The player has the third wood block
+            (HasWoodBlock ?agent ?wood4) ; The player has the fourth wood block
+            (not (= ?wood1 ?wood2)) ; Ensure the first and second wood blocks are distinct
+            (not (= ?wood1 ?wood3)) ; Ensure the first and third wood blocks are distinct
+            (not (= ?wood1 ?wood4)) ; Ensure the first and fourth wood blocks are distinct
+            (not (= ?wood2 ?wood3)) ; Ensure the second and third wood blocks are distinct
+            (not (= ?wood2 ?wood4)) ; Ensure the second and fourth wood blocks are distinct
+            (not (= ?wood3 ?wood4)) ; Ensure the third and fourth wood blocks are distinct
+        )
+   :effect
+        (and
+            (not (HasWoodBlock ?agent ?wood1)) ; The player no longer has the first wood block
+            (not (HasWoodBlock ?agent ?wood2)) ; The player no longer has the second wood block
+            (not (HasWoodBlock ?agent ?wood3)) ; The player no longer has the third wood block
+            (not (HasWoodBlock ?agent ?wood4)) ; The player no longer has the fourth wood block
+            (HasPlankBlock ?agent ?plank1) ; The player has the first plank block
+            (HasPlankBlock ?agent ?plank2) ; The player has the second plank block
+            (HasPlankBlock ?agent ?plank3) ; The player has the third plank block
+            (HasPlankBlock ?agent ?plank4) ; The player has the fourth plank block
+        )
+)
+
+[STAGE ONE OUTPUT]:
+The `craftItem` function automates the crafting process in Minecraft by directing a bot to craft a specified item a given number of times. It first identifies the item and locates a nearby crafting table. The bot then navigates to the crafting table and uses the appropriate recipe to craft the item the specified number of times.
+
+[STAGE TWO OUTPUT]:
+The `craftItem` function aims to automate item crafting by requiring a nearby crafting table and results in the bot crafting the specified item multiple times.
+
+[STAGE THREE OUTPUT]:
+To create a simple PDDL action for crafting wooden planks in Minecraft, we need to consider the types involved in the action. Based on the provided summary and the specific requirements of crafting wooden planks, we can identify the relevant types:
+
+1. **player**: This type represents the player who is performing the crafting action. The player is essential because they are the entity executing the action.
+
+2. **woodBlock**: This type represents the wood blocks required as input for crafting wooden planks. Since the action requires four matching wood blocks, this type is necessary to specify the resources needed.
+
+3. **plankBlock**: This type represents the output of the crafting action, which is the wooden planks. The action results in the player having four individual planks, so this type is needed to specify the result.
+
+The crafting table is not required for this specific action, as mentioned in the description, so we do not need to include the `craftTable` type. Other types like `stickItem`, `woodenSword`, and `woodenPickaxe` are not relevant to this action.
+
+## OUTPUT
+```python
+{
+    "player": "The entity performing the crafting action",
+    "woodBlock": "The input resource required for crafting wooden planks",
+    "plankBlock": "The output result of the crafting action"
+}
+```
+
+[STAGE FOUR OUTPUT]:
+Based on the given information, the action to create wooden planks from wood blocks requires the player to have four wood blocks and results in the player having four plank blocks. The relevant predicates from the list provided are those that indicate the possession of wood blocks and plank blocks by the player. The crafting table is not needed for this action, so predicates related to the crafting table are not required.
+
+The relevant predicates are:
+
+- (HasWoodBlock ?agent - player ?wood - woodBlock)
+- (HasPlankBlock ?agent - player ?plank - plankBlock)
+
+### New Predicates
+```
+- (HasWoodBlock ?agent - player ?wood - woodBlock): 'Indicates the player has a wood block'
+- (HasPlankBlock ?agent - player ?plank - plankBlock): 'Indicates the player has a plank block'
+```
+
+[STAGE FIVE OUTPUT]:
+To create a PDDL action for crafting wooden planks in Minecraft, we will define the action parameters, preconditions, and effects based on the given types and predicates. The action will ensure that the player has four distinct wood blocks and will result in the player having four plank blocks.
+
+### Action Parameters
+```
+- ?agent - player: 'The player performing the crafting action'
+- ?wood1 - woodBlock: 'The first wood block'
+- ?wood2 - woodBlock: 'The second wood block'
+- ?wood3 - woodBlock: 'The third wood block'
+- ?wood4 - woodBlock: 'The fourth wood block'
+- ?plank1 - plankBlock: 'The first resulting plank block'
+- ?plank2 - plankBlock: 'The second resulting plank block'
+- ?plank3 - plankBlock: 'The third resulting plank block'
+- ?plank4 - plankBlock: 'The fourth resulting plank block'
+```
+
+### Action Preconditions
+```
+(and
+    (HasWoodBlock ?agent ?wood1) ; The player has the first wood block
+    (HasWoodBlock ?agent ?wood2) ; The player has the second wood block
+    (HasWoodBlock ?agent ?wood3) ; The player has the third wood block
+    (HasWoodBlock ?agent ?wood4) ; The player has the fourth wood block
+    (not (= ?wood1 ?wood2)) ; Ensure the first and second wood blocks are distinct
+    (not (= ?wood1 ?wood3)) ; Ensure the first and third wood blocks are distinct
+    (not (= ?wood1 ?wood4)) ; Ensure the first and fourth wood blocks are distinct
+    (not (= ?wood2 ?wood3)) ; Ensure the second and third wood blocks are distinct
+    (not (= ?wood2 ?wood4)) ; Ensure the second and fourth wood blocks are distinct
+    (not (= ?wood3 ?wood4)) ; Ensure the third and fourth wood blocks are distinct
+)
+```
+
+### Action Effects
+```
+(and
+    (not (HasWoodBlock ?agent ?wood1)) ; The player no longer has the first wood block
+    (not (HasWoodBlock ?agent ?wood2)) ; The player no longer has the second wood block
+    (not (HasWoodBlock ?agent ?wood3)) ; The player no longer has the third wood block
+    (not (HasWoodBlock ?agent ?wood4)) ; The player no longer has the fourth wood block
+    (HasPlankBlock ?agent ?plank1) ; The player has the first plank block
+    (HasPlankBlock ?agent ?plank2) ; The player has the second plank block
+    (HasPlankBlock ?agent ?plank3) ; The player has the third plank block
+    (HasPlankBlock ?agent ?plank4) ; The player has the fourth plank block
+)
+```
+
+### New Predicates
+```
+
+``` 
+
+This PDDL action captures the process of crafting wooden planks from wood blocks in Minecraft, ensuring that the player has the necessary resources and resulting in the correct output.
